@@ -1,0 +1,14 @@
+listItems:
+
+BRIEF DESCRIPTION:
+This use case describes how a user can browse the items from the store.
+It is accesible after the user logs in or enters as a guest.
+
+ACTORS:
+User.
+
+PRE-CONDITIONS:
+None.
+
+BASIC FLOW: 
+User just acceses the listItem feature and the list shows on screen.
