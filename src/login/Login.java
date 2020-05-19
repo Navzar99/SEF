@@ -97,7 +97,6 @@ public class Login extends JFrame implements ActionListener {
                 newCredential.setType(typeInt);
                 credentials.add(newCredential);
             }
-            System.out.println(credentials);
 
             scan.close();
         } catch (FileNotFoundException e) {
@@ -105,7 +104,7 @@ public class Login extends JFrame implements ActionListener {
         }
     }
 
-    Login() {
+    public Login() {
         // Username Label
         user = new JLabel();
         user.setText("User Name :");
@@ -166,7 +165,6 @@ public class Login extends JFrame implements ActionListener {
         {
             // guest user
             accountType = 0;
-            System.out.println("Logged in as guest");
             this.loggedIn = true;
             setVisible(false);
             return;
