@@ -1,3 +1,16 @@
+/****************************************************************************
+ * Once instantiated, login must be completed                               *
+ *                                                                          *
+ * To check situation of the logged in account, use following methods:      *
+ * int getAccountType()                                                     *
+ * boolean isGuest()                                                        *
+ * boolean isUser()                                                         *
+ * boolean isAdmin()                                                        *
+ *                                                                          *
+ * To check if logged in, use the following method:                         *
+ * boolean isLoggedIn()                                                     *
+ ****************************************************************************/
+
 package login;
 
 import java.awt.*;
@@ -5,10 +18,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class LoginScreen extends JFrame implements ActionListener {
+public class Login extends JFrame implements ActionListener {
     JPanel panel;
     JLabel user, password, errorMessage;
     JTextField userText;
@@ -17,18 +33,45 @@ public class LoginScreen extends JFrame implements ActionListener {
 
     ArrayList<Credentials> credentials;
     private int accountType = 0;
+    private boolean loggedIn = false;
 
-    public int getAccountType()
+    public boolean isLoggedIn()
     {
+        if(loggedIn)
+            return true;
+        else
+            return false;
+    }
+
+    public int getAccountType() {
         return this.accountType;
     }
 
-    private int getFileLineNumber(File file)    throws FileNotFoundException
-    {
+    public boolean isGuest() {
+        if (this.accountType == 0)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isUser() {
+        if (this.accountType == 1)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isAdmin() {
+        if (this.accountType == 2)
+            return true;
+        else
+            return false;
+    }
+
+    private int getFileLineNumber(File file) throws FileNotFoundException {
         Scanner scan = new Scanner(file);
         int nr = 0;
-        while(scan.hasNextLine())
-        {
+        while (scan.hasNextLine()) {
             scan.nextLine();    // consume line
             nr++;
         }
@@ -38,16 +81,14 @@ public class LoginScreen extends JFrame implements ActionListener {
     }
 
     private void readCredentialFile() {
-        try
-        {
+        try {
             File credFile = new File("passwords.txt");
             Scanner scan = new Scanner(credFile);
             int credNumber = getFileLineNumber(credFile) / 2;  // each credential has 2 lines (user, pwd)
             credentials = new ArrayList<Credentials>(credNumber);
             Credentials newCredential;
 
-            while(scan.hasNextLine())
-            {
+            while (scan.hasNextLine()) {
                 newCredential = new Credentials();
                 newCredential.setUsername(scan.nextLine());
                 newCredential.setPassword(scan.nextLine());
@@ -59,13 +100,12 @@ public class LoginScreen extends JFrame implements ActionListener {
             System.out.println(credentials);
 
             scan.close();
-        } catch(FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             System.out.println("Could not open file\n");
         }
     }
 
-    LoginScreen() {
+    Login() {
         // Username Label
         user = new JLabel();
         user.setText("User Name :");
@@ -89,14 +129,32 @@ public class LoginScreen extends JFrame implements ActionListener {
         submit.addActionListener(this);
         add(panel, BorderLayout.CENTER);
         setTitle("Login");
-        setSize(450,350);
+        setSize(450, 350);
         setVisible(true);
 
         readCredentialFile();
     }
-    public static void main(String[] args) {
-        new LoginScreen();
 
+    public static String byteArrayToHexString(byte[] a) {
+        StringBuilder sb = new StringBuilder(a.length * 2);
+        for(byte b: a)
+            sb.append(String.format("%02x", b));
+        return sb.toString();
+    }
+
+    private String sha256(String string)
+    {
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] byteHash = md.digest(string.getBytes(StandardCharsets.UTF_8));
+
+            return byteArrayToHexString(byteHash);
+        }catch (NoSuchAlgorithmException e)
+        {
+            System.out.println("Algorithm does not exist");
+            return "";
+        }
     }
 
     @Override
@@ -108,10 +166,15 @@ public class LoginScreen extends JFrame implements ActionListener {
         {
             // guest user
             accountType = 0;
+            System.out.println("Logged in as guest");
+            this.loggedIn = true;
+            setVisible(false);
             return;
         }
 
-        Credentials inputCredential = new Credentials(user, pwd);
+        String pwdHash = sha256(pwd);
+
+        Credentials inputCredential = new Credentials(user, pwdHash);
         Credentials matchingCredential = new Credentials();
         boolean foundMatch = false;
         for (Credentials aux : credentials)
@@ -125,7 +188,11 @@ public class LoginScreen extends JFrame implements ActionListener {
         }
         if(foundMatch)
         {
-            accountType = matchingCredential.getType();
+            this.accountType = matchingCredential.getType();
+            this.loggedIn = true;
+            //System.out.println("Logged in with type " + this.accountType);
+
+            setVisible(false);
         }
         else
         {
