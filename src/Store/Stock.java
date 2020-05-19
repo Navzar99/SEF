@@ -29,4 +29,7 @@ public class Stock {
         stock.put(newItem, quantity);
     }
 
+    public HashMap<Item, Integer> getStock() {
+        return stock;
+    }
 }

@@ -4,6 +4,7 @@ import jdk.jfr.Unsigned;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Customer extends User {
     private String username;
@@ -14,13 +15,24 @@ public class Customer extends User {
 
 
     @Override//lists items from the store
-    public void listItems() {
-
+    public void listItems(Stock stock) {
+        for (Map.Entry<Item, Integer> pair : stock.getStock().entrySet()) {
+            System.out.println("Item: " + pair.getKey().getName() +
+                    "\tPrice: " + pair.getKey().getPrice() +
+                    "\tStock:" + pair.getValue());
+        }
     }
 
     @Override//displays item
-    public void openItem(Item item) {
-        System.out.println(item);
+    public void openItem(Stock stock, String name) {
+        for (Map.Entry<Item, Integer> pair : stock.getStock().entrySet()) {
+            if (pair.getKey().getName().equals(name)) {
+                System.out.println("Item: " + pair.getKey().getName() +
+                        "\tPrice: " + pair.getKey().getPrice() +
+                        "\tStock:" + pair.getValue());
+                break;
+            }
+        }
     }
 
     //places order and sends it to HQ

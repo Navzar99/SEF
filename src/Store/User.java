@@ -11,10 +11,10 @@ abstract class User {
 
 
     //List all items in the store
-    abstract public void listItems();
+    abstract public void listItems(Stock stock);
 
     //Display the name, price and description for given item
-    abstract public void openItem(Item item);
+    abstract public void openItem(Stock stock, String name);
 
     //Display commands
     public abstract void help();
