@@ -2,22 +2,18 @@ package Store;
 
 import jdk.jfr.Unsigned;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Customer extends User {
     private String username;
     private String password;
 
+    private Order order = new Order();
+    private ArrayList<Order> history = new ArrayList<Order>();
 
 
-    private String customerCommands =   "\n" +
-                                        "|-viewHistory: displays the history of past orders\n" +
-                                        "|-addToBasket(item): adds item to the basket\n" +
-                                        "|-removeFromBasket(item): removes item from basket\n" +
-                                        "|-viewBasket: display the contents of the basket\n" +
-                                        "|-placeOrder: sends the current basket to HQ";
-
-    @Override//lists items
+    @Override//lists items from the store
     public void listItems() {
 
     }
@@ -27,11 +23,47 @@ public class Customer extends User {
         System.out.println(item);
     }
 
-    @Override
+    //places order and sends it to HQ
+    void placeOrder() {
+        history.add(order);
+    }
+
+    @Override//Displays the commands available to the customer
     public void help() {
+        String customerCommands = "\n" +
+                "|-viewHistory: displays the history of past orders\n" +
+                "|-addToBasket(item): adds item to the basket\n" +
+                "|-removeFromBasket(item): removes item from basket\n" +
+                "|-viewBasket: display the contents of the basket\n" +
+                "|-placeOrder: sends the current basket to HQ";
         System.out.println(basicCommands + customerCommands);
     }
 
 
-    Item Rosi = new Item("Rosi", 3);
+    //ads products to basket
+    public void addToBasket(Item item, Integer quantity) {
+        if (quantity < 0) {
+            System.out.println("Quantity must be positive");
+        }
+        else {
+            order.add(item, quantity);
+        }
+    }
+
+    //removes item from basket
+    public void removeFromBasket(Item item) {
+        order.remove(item);
+    }
+
+    //prints the basket
+    public void viewBasket() {
+        System.out.println(order);
+    }
+
+    public void viewHistory() {
+        for(Order i : history) {
+            System.out.println(i);
+        }
+    }
+
 }
