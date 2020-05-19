@@ -29,7 +29,7 @@ public class Order {
 
     @Override
     public String toString() {
-        String buffer = "Item\t\t\tNumber\t\tPrice\n";
+        String buffer = "Item\t\t\tQuantity\t Price\n";
         buffer += "----------------------------------\n";
         //basket.forEach((key, value) -> buffer += key.getName() + );
 
