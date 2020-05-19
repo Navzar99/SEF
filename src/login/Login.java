@@ -16,6 +16,12 @@ public class LoginScreen extends JFrame implements ActionListener {
     JButton submit;
 
     ArrayList<Credentials> credentials;
+    private int accountType = 0;
+
+    public int getAccountType()
+    {
+        return this.accountType;
+    }
 
     private int getFileLineNumber(File file)    throws FileNotFoundException
     {
@@ -27,6 +33,7 @@ public class LoginScreen extends JFrame implements ActionListener {
             nr++;
         }
 
+        scan.close();
         return nr;
     }
 
@@ -44,9 +51,14 @@ public class LoginScreen extends JFrame implements ActionListener {
                 newCredential = new Credentials();
                 newCredential.setUsername(scan.nextLine());
                 newCredential.setPassword(scan.nextLine());
+                String typeStr = scan.nextLine();
+                int typeInt = Integer.parseInt(typeStr);
+                newCredential.setType(typeInt);
                 credentials.add(newCredential);
             }
             System.out.println(credentials);
+
+            scan.close();
         } catch(FileNotFoundException e)
         {
             System.out.println("Could not open file\n");
@@ -92,6 +104,13 @@ public class LoginScreen extends JFrame implements ActionListener {
         String user = userText.getText();
         String pwd = passwordText.getText();
 
+        if(user.equals("") && pwd.equals(""))
+        {
+            // guest user
+            accountType = 0;
+            return;
+        }
+
         Credentials inputCredential = new Credentials(user, pwd);
         Credentials matchingCredential = new Credentials();
         boolean foundMatch = false;
@@ -106,7 +125,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         }
         if(foundMatch)
         {
-            errorMessage.setText("Welcome " + matchingCredential.getUsername());
+            accountType = matchingCredential.getType();
         }
         else
         {
